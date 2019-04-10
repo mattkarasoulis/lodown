@@ -70,19 +70,25 @@ _.typeOf = function(value) {
 *   _.first(["a", "b", "c"], 1) -> "a"
 *   _.first(["a", "b", "c"], 2) -> ["a", "b"]
 */
- _.first = function (array, n){
-     const ne = [];
-     if (Array.isArray(array) === false || n < 0) {
-         return ne;
-    }else if(n > array.length){
-        return array;
-    }else if(n === undefined || n !== "number"){
-       return array[0] 
-     }else{
-         
-             
-         }  
-     }
+ _.first = function(arr, num) {
+    const arr1 = [];
+    
+    if (Array.isArray(arr) === false || num < 0) {
+        return [];
+    }
+    else if (num === undefined) {
+        return arr[0];
+    }
+    else if (num > arr.length) {
+        return arr;
+    }
+    else {
+        for (let i = 0; i < num; i++) {
+            arr1.push(arr[i]);
+        }
+        return arr1;
+    }
+};
   
 
 /** _.last
@@ -102,7 +108,25 @@ _.typeOf = function(value) {
 *   _.last(["a", "b", "c"], 1) -> "c"
 *   _.last(["a", "b", "c"], 2) -> ["b", "c"]
 */
-
+_.last = function(array, number) {
+    const arr = [];
+    
+    if (Array.isArray(array) === false || number < 0) {
+        return [];
+    }
+    else if (number === undefined) {
+        return array[array.length - 1];
+    }
+    else if (number > array.length) {
+        return array;
+    }
+    else {
+        for (let i = number - 1; i < array.length; i++) {
+            arr.push(array[i]);
+        }
+        return arr;
+    }
+};
 
 /** _.indexOf
 * Arguments:
@@ -119,17 +143,13 @@ _.typeOf = function(value) {
 *   _.indexOf(["a","b","c"], "c") -> 2
 *   _.indexOf(["a","b","c"], "d") -> -1
 */
-_.indexOf = function(array, value){
-    var result;
-    for(let i = 0; i<array.length; i++){
-        if (array[i] === value){
-            result = i
-            break;
-        } else if(array[i] === array.length-1){
-            result = -1
+_.indexOf = function(array, value) {
+    for (let i = 0; i < array.length; i++) {
+        if (array[i] === value) {
+            return i;
         }
     }
-    return result;
+    return -1;
 }
 
 
@@ -196,6 +216,15 @@ _.each = function (coll, fn){
 * Extra Credit:
 *   use _.each in your implementation
 */
+_.filter = function(array, fn) {
+    const arr = [];
+    _.each(array, function(e, i, c) {
+        if (fn(e, i, c)) {
+            arr.push(e);
+        }
+    });
+    return arr;
+}
 
 
 /** _.map
@@ -213,7 +242,13 @@ _.each = function (coll, fn){
 * Examples:
 *   _.map([1,2,3,4], function(e){return e * 2}) -> [2,4,6,8]
 */
-
+_.map = function(coll, fn) {
+      const arr = [];
+      _.each(coll, function(e, i, c) {
+         arr.push(fn(e, i, c)); 
+      });
+      return arr;
+}
 
 /** _.reject
 * Arguments:
@@ -227,7 +262,15 @@ _.each = function (coll, fn){
 * Examples:
 *   _.reject([1,2,3,4,5], function(e){return e%2 === 0}) -> [1,3,5]
 */
-
+_.reject = function(coll, fn) {
+    const arr = [];
+    for(let i = 0; i < coll.length; i++) {
+        if(fn(coll[i], i, coll) !== true) {
+            arr.push(coll[i]);
+        }
+    }
+    return arr;
+};
 
 /** _.partition
 * Arguments:
@@ -247,7 +290,20 @@ _.each = function (coll, fn){
 *   }); -> [[2,4],[1,3,5]]
 }
 */
-
+_.partition = function(array, fn) {
+    const arr = [];
+    const tr = [];
+    const fa = [];
+    for (let i = 0; i < array.length; i++) {
+        if(fn(array[i])) {
+            tr.push(array[i]);
+        } else {
+            fa.push(array[i]);
+        }
+    }
+    arr.push(tr, fa);
+    return arr;
+}
 
 /** _.every
 * Arguments:
@@ -269,26 +325,35 @@ _.each = function (coll, fn){
 *   _.every([2,4,6], function(e){return e % 2 === 0}) -> true
 *   _.every([1,2,3], function(e){return e % 2 === 0}) -> false
 */
-_.every = function(collection, fn){
-   let allTrue = true
-   if(Array.isArray(collection)){
-      for(let i = 0; i < collection.length; i++){
-          let bool = (collection[i], i, collection);
-          if(bool === false){
-              allTrue = false;
-          }
-      }
-      return allTrue;
-   }else{
-       for (let key in collection){
-           let bool = test(collection[key], key, collection);
-           if(bool === false){
-               allTrue = false
-           }
-       }
-       return allTrue;
-   } 
-}
+_.every = function(coll, fn) {
+    if(fn === undefined) {
+        for (let i = 0; i < coll.length; i++) {
+            if (!coll[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    else if (_.typeOf(coll) === "array") {
+        for(let i = 0; i < coll.length; i++) {
+            if(!fn(coll[i])) {
+                return false;
+            } else {
+                continue;
+            }
+        }
+        return true;
+    } else {
+        for (let key in coll) {
+            if(!fn(coll[key], key, coll)) {
+                return false;
+            } else {
+                continue;
+            }
+        }
+        return true;
+    }
+};
 
 /** _.some
 * Arguments:
@@ -310,6 +375,32 @@ _.every = function(collection, fn){
 *   _.some([1,3,5], function(e){return e % 2 === 0}) -> false
 *   _.some([1,2,3], function(e){return e % 2 === 0}) -> true
 */
+_.some = function(coll, fn) {
+    if (fn === undefined) {
+        for (let i = 0; i < coll.length; i++) {
+            if (coll[i]) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    else if (Array.isArray(coll)) {
+        for (let i = 0; i < coll.length; i++) {
+            if (fn(coll[i])) {
+                return true;
+            }
+        }
+        return false;
+    } else {
+        for (let key in coll) {
+            if(fn(coll[key], key, coll)) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
 
 
 /** _.pluck
@@ -322,7 +413,11 @@ _.every = function(collection, fn){
 * Examples:
 *   _.pluck([{a: "one"}, {a: "two"}], "a") -> ["one", "two"]
 */
-
+_.pluck = function(array, prop) {
+    return _.map(array, function(e, i, c) {
+        return(array[i][prop]);
+    });
+};
 
 //////////////////////////////////////////////////////////////////////
 // DON'T REMOVE THIS CODE ////////////////////////////////////////////
